@@ -13,15 +13,15 @@ import java.util.List;
 public class Daily {
 
 
-    private List<Fight> fight = new ArrayList<>();
-    /*{
+    private List<Fight> fight = new ArrayList<>()
+    {
         {
             add(new Fight("jm", 5));
-            add(new Fight("ls", 99));
             add(new Fight("ce", 99));
+            add(new Fight("ls", 99));
             add(new Fight("1-7", 99));
         }
-    };*/
+    };
     private Sanity sanity = new Sanity(0, 0);
     private boolean mail = true;
     private Offer offer = new Offer(
