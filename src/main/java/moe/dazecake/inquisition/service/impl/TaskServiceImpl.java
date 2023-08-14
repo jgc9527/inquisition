@@ -20,10 +20,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -93,15 +90,17 @@ public class TaskServiceImpl implements TaskService {
                 }
 
                 //B服限制检查
-                if (account.getServer() == 1 && account.getBLimitDevice().size() != 0) {
+                if (account.getServer() == 1 && account.getBLimitDevice()!=null && account.getBLimitDevice().size() != 0) {
                     var usedDeviceToken = account.getBLimitDevice().get(0);
+                    //不属于当期用户归属的设备不匹配请求获取任务的设备时,过滤当前用户任务
                     if (!Objects.equals(usedDeviceToken, deviceToken)) {
-                        if (dynamicInfo.getDeviceStatusMap().containsKey(usedDeviceToken)) {
+                        continue;
+                        /*if (dynamicInfo.getDeviceStatusMap().containsKey(usedDeviceToken)) {
                             continue;
                         } else {
                             account.getBLimitDevice().clear();
                             accountMapper.updateById(account);
-                        }
+                        }*/
                     }
                 }
 

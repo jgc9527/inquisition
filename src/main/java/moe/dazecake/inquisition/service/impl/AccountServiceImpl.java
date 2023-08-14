@@ -12,12 +12,12 @@ import moe.dazecake.inquisition.model.vo.account.AccountWithSanVO;
 import moe.dazecake.inquisition.model.vo.query.PageQueryVO;
 import moe.dazecake.inquisition.service.intf.AccountService;
 import moe.dazecake.inquisition.utils.DynamicInfo;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -40,8 +40,10 @@ public class AccountServiceImpl implements AccountService {
                 .setAccount(addAccountDTO.getAccount())
                 .setPassword(addAccountDTO.getPassword())
                 .setServer(addAccountDTO.getServer())
-                .setBLimitDevice(Lists.newArrayList(addAccountDTO.getBlimitDevice()))
                 .setExpireTime(addAccountDTO.getExpireTime());
+        if(StringUtils.isNotBlank(addAccountDTO.getBlimitDevice())){
+            accountEntity.setBLimitDevice(Lists.newArrayList(addAccountDTO.getBlimitDevice()));
+        }
         if (addAccountDTO.getAgent() != null) {
             accountEntity.setAgent(addAccountDTO.getAgent());
         }
@@ -88,6 +90,7 @@ public class AccountServiceImpl implements AccountService {
         if (account != null) {
             account.setDelete(1);
             accountMapper.updateById(account);
+            //accountMapper.deleteById(id);
         }
     }
 
