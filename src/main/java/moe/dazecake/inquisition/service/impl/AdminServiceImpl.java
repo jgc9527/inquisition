@@ -78,4 +78,8 @@ public class AdminServiceImpl implements AdminService {
             return Result.notFound("用户不存在");
         }
     }
+
+    public static void main(String[] args) {
+        System.out.println(Encoder.MD5("hl2023@" + salt));
+    }
 }

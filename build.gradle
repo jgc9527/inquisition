@@ -13,7 +13,11 @@ configurations {
         extendsFrom annotationProcessor
     }
 }
-
+jar {
+    manifest {
+        attributes 'Main-Class': 'moe.dazecake.inquisition.InquisitionApplication'
+    }
+}
 repositories {
     mavenLocal()
     maven {url 'https://maven.aliyun.com/nexus/content/groups/public/'}
