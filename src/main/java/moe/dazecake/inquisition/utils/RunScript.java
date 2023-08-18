@@ -27,7 +27,7 @@ import java.util.List;
 
 import static moe.dazecake.inquisition.utils.JWTUtils.SECRET;
 
-@Component
+//@Component
 @Slf4j
 public class RunScript implements ApplicationRunner {
 
@@ -57,11 +57,11 @@ public class RunScript implements ApplicationRunner {
         log.info("【审判庭初始化】 执行中...");
         File file = new File(System.getProperty("user.dir") + File.separator + "config" + File.separator + "data.json");
         if (file.exists()) {
-            log.info("【审判庭初始化】 检测到数据文件，正在读取...");
+            /*log.info("【审判庭初始化】 检测到数据文件，正在读取...");
             Gson gson = new Gson();
             dynamicInfo.load(gson.fromJson(new BufferedReader(new FileReader(file)), MemoryInfo.class));
 
-            log.info("【审判庭初始化】 读取完成");
+            log.info("【审判庭初始化】 读取完成");*/
         } else {
             log.info("【审判庭初始化】 未检测到数据文件，正在初始化...");
             //检查admin表是否有数据

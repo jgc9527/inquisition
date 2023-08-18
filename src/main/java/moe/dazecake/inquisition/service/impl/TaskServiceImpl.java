@@ -1,5 +1,6 @@
 package moe.dazecake.inquisition.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.extern.slf4j.Slf4j;
 import moe.dazecake.inquisition.mapper.AccountMapper;
@@ -81,8 +82,8 @@ public class TaskServiceImpl implements TaskService {
             var iterator = dynamicInfo.getWaitUserList().iterator();
             var hit = false;
             while (iterator.hasNext()) {
-                account = accountMapper.selectById(iterator.next());
-
+                Long id=iterator.next();
+                account = accountMapper.selectById(id);
                 //时间检查，不在激活区间则跳转到下一个判断
                 if (!checkActivationTime(account)) {
                     iterator.remove();
