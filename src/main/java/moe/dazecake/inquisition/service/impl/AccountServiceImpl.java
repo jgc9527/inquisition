@@ -8,6 +8,7 @@ import moe.dazecake.inquisition.mapper.mapstruct.AccountConvert;
 import moe.dazecake.inquisition.model.dto.account.AccountDTO;
 import moe.dazecake.inquisition.model.dto.account.AddAccountDTO;
 import moe.dazecake.inquisition.model.entity.AccountEntity;
+import moe.dazecake.inquisition.model.entity.DeviceEntity;
 import moe.dazecake.inquisition.model.vo.account.AccountWithSanVO;
 import moe.dazecake.inquisition.model.vo.query.PageQueryVO;
 import moe.dazecake.inquisition.service.intf.AccountService;
@@ -105,22 +106,22 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public PageQueryVO<AccountWithSanVO> queryAllAccount(Long current, Long size) {
-        var data = accountMapper.selectPage(new Page<>(current, size), null);
+        var data = accountMapper.selectPage(new Page<>(current, size), Wrappers.<AccountEntity>lambdaQuery().eq(AccountEntity::getDelete, 0));
         return getAccountWithSanVOPageQueryVO(data);
     }
 
     @Override
     public PageQueryVO<AccountWithSanVO> queryAccount(Long current, Long size, String keyword) {
         var data = accountMapper.selectPage(new Page<>(current, size), Wrappers.<AccountEntity>lambdaQuery()
-                .eq(AccountEntity::getId, keyword));
+                .eq(AccountEntity::getId, keyword).eq(AccountEntity::getDelete, 0));
 
         if (data.getRecords().size() == 0) {
             data = accountMapper.selectPage(new Page<>(current, size), Wrappers.<AccountEntity>lambdaQuery()
-                    .like(AccountEntity::getAccount, keyword));
+                    .like(AccountEntity::getAccount, keyword).eq(AccountEntity::getDelete, 0));
         }
         if (data.getRecords().size() == 0) {
             data = accountMapper.selectPage(new Page<>(current, size), Wrappers.<AccountEntity>lambdaQuery()
-                    .like(AccountEntity::getName, keyword));
+                    .like(AccountEntity::getName, keyword).eq(AccountEntity::getDelete, 0));
         }
 
         return getAccountWithSanVOPageQueryVO(data);

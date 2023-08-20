@@ -182,11 +182,12 @@ public class DynamicScheduleTask implements SchedulingConfigurer {
                                 var msg = "您的托管账号将于" + account.getExpireTime()
                                         .format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "过期，记得及时续费哦。";
 
-                                messageService.push(account, "【明日方舟】托管续费提醒", msg);
+                                //messageService.push(account, "【明日方舟】托管续费提醒", msg);
+                                messageService.pushAdmin( "【明日方舟】托管续费提醒", msg);
                             }
                     );
                 },
-                triggerContext -> new CronTrigger("0 0 20 * * ?").nextExecutionTime(triggerContext)
+                triggerContext -> new CronTrigger("0 0 23 * * ?").nextExecutionTime(triggerContext)
         );
         //账号冻结检测
         taskRegistrar.addTriggerTask(
@@ -201,8 +202,8 @@ public class DynamicScheduleTask implements SchedulingConfigurer {
                                 log.info("【冻结账号】: " + account.getName() + "\t" + account.getAccount());
                                 var msg = "您的账号仍处于冻结状态，若非手动冻结请及时检查账号状态，避免浪费账号托管时长";
 
-                                messageService.push(account, "【明日方舟】账号冻结提醒", msg);
-
+                                //messageService.push(account, "【明日方舟】账号冻结提醒", msg);
+                                messageService.pushAdmin( "【明日方舟】账号冻结提醒", msg);
                             }
                     );
                 },

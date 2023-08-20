@@ -61,9 +61,11 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Result<AccountDTO> getTask(String deviceToken) {
+
         //设备合法性检查
-        if (deviceMapper.selectOne(Wrappers.<DeviceEntity>lambdaQuery()
-                .eq(DeviceEntity::getDeviceToken, deviceToken)) == null) {
+        var device = deviceMapper.selectOne(Wrappers.<DeviceEntity>lambdaQuery()
+                .eq(DeviceEntity::getDeviceToken, deviceToken));
+        if (device == null) {
             return Result.unauthorized("设备未授权");
         }
 
@@ -84,13 +86,26 @@ public class TaskServiceImpl implements TaskService {
             while (iterator.hasNext()) {
                 Long id=iterator.next();
                 account = accountMapper.selectById(id);
-                //时间检查，不在激活区间则跳转到下一个判断
-                if (!checkActivationTime(account)) {
-                    iterator.remove();
+
+
+                var taskType=account.getServer() == 1?"b_"+account.getTaskType():account.getTaskType();
+
+                //1.官服设备拉官服日常 daily OK 可以拉到任务
+                //2.官服设备拉B服日常 b_daily continue 拉不到任务
+                //3.B服设备拉官服日常 daily continue  拉不到B服的任务
+                //4.B服设备拉B服日常 b_daily OK 可以拉到任务
+                //作用域检查
+                if (!device.getWorkScope().contains(taskType)) {
                     continue;
                 }
 
-                //B服限制检查
+
+                //对于当前B服日常任务,如果当前设置作用域不包含处理B服日常的作用,则跳过
+                /*if (account.getServer() == 1 && account.getTaskType().equals("daily") && !device.getWorkScope().contains("b_daily")) {
+                    continue;
+                }*/
+
+                //B服限制检查,对于当前B服日常任务,需要当前设备token与任务账号的token一致才会执行
                 if (account.getServer() == 1 && account.getBLimitDevice()!=null && account.getBLimitDevice().size() != 0) {
                     var usedDeviceToken = account.getBLimitDevice().get(0);
                     //不属于当期用户归属的设备不匹配请求获取任务的设备时,过滤当前用户任务
@@ -104,6 +119,15 @@ public class TaskServiceImpl implements TaskService {
                         }*/
                     }
                 }
+
+
+
+                //时间检查，不在激活区间则跳转到下一个判断
+                if (!checkActivationTime(account)) {
+                    iterator.remove();
+                    continue;
+                }
+
 
                 //重复分配任务检查
                 AccountEntity finalAccount = account;
@@ -222,8 +246,8 @@ public class TaskServiceImpl implements TaskService {
         errorHandle(account, deviceToken, type);
 
         //推送消息
-        messageService.push(account, "任务失败", "任务失败，请登陆面板查看失败原因");
-
+        //messageService.push(account, "任务失败", "任务失败，请登陆面板查看失败原因");
+        messageService.pushAdmin(account.getName()+":"+account.getAccount()+"任务失败", "任务失败，请登陆面板查看失败原因");
         return Result.success("success");
     }
 
@@ -489,7 +513,7 @@ public class TaskServiceImpl implements TaskService {
         LocalDateTime localDateTime = LocalDateTime.now();
         switch (account.getTaskType()) {
             case "daily":
-                dynamicInfo.addWorkUser(account.getId(), deviceToken, localDateTime.plusHours(2));
+                dynamicInfo.addWorkUser(account.getId(), deviceToken, localDateTime.plusHours(4));
                 break;
             case "rogue":
             case "rogue2":
@@ -549,16 +573,19 @@ public class TaskServiceImpl implements TaskService {
                         account.setFreeze(1);
                         accountMapper.updateById(account);
                         dynamicInfo.getUserSanInfoMap().remove(account.getId());
-                        messageService.push(account, "账号异常", "您的账号密码有误，请在面板更新正确的账号密码，否则托管将无法继续进行");
+                        //messageService.push(account, "账号异常", "您的账号密码有误，请在面板更新正确的账号密码，否则托管将无法继续进行");
+                        messageService.pushAdmin(account.getAccount()+"账号异常", "您的账号"+account.getName()+"密码有误，冻结此账号,请在面板更新正确的账号密码，否则托管将无法继续进行");
                     }
                 } else if (account.getServer() == 1) {
                     if (httpService.isBiliAccountWork(account.getAccount(), account.getPassword())) {
-                        messageService.push(account, "账号异常", "您近期登陆的设备较多，已被B服限制登陆，请立即修改密码并于面板更新密码,否则托管可能将无法继续进行");
+                        //messageService.push(account, "账号异常", "您近期登陆的设备较多，已被B服限制登陆，请立即修改密码并于面板更新密码,否则托管可能将无法继续进行");
+                        messageService.pushAdmin(account.getAccount()+"账号异常", "您近期登陆的设备较多，已被B服限制登陆，请立即修改密码并于面板更新密码,否则托管可能将无法继续进行");
                     } else {
                         account.setFreeze(1);
                         accountMapper.updateById(account);
                         dynamicInfo.getUserSanInfoMap().remove(account.getId());
-                        messageService.push(account, "账号异常", "您的账号密码有误，请在面板更新正确的账号密码，否则托管将无法继续进行");
+                        //messageService.push(account, "账号异常", "您的账号密码有误，请在面板更新正确的账号密码，否则托管将无法继续进行");
+                        messageService.pushAdmin(account.getAccount()+"账号异常", "您的账号"+account.getName()+"密码有误，请在面板更新正确的账号密码，否则托管将无法继续进行");
                     }
                 }
             }

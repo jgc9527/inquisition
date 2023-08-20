@@ -9,5 +9,5 @@ import java.util.HashMap;
 @Data
 @NoArgsConstructor
 public class LoadDeviceVO {
-    private ArrayList<HashMap<String, String>> loadDeviceList = new ArrayList<>();
+    private ArrayList<LoadDevice> loadDeviceList = new ArrayList<>();
 }

@@ -27,7 +27,7 @@ import java.util.List;
 
 import static moe.dazecake.inquisition.utils.JWTUtils.SECRET;
 
-//@Component
+@Component
 @Slf4j
 public class RunScript implements ApplicationRunner {
 

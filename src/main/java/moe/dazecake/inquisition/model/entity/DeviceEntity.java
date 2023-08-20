@@ -23,7 +23,7 @@ import java.util.ArrayList;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(chain = true)
-@TableName("device")
+@TableName(value = "device",autoResultMap=true)
 @Schema(description = "设备配置")
 public class DeviceEntity {
 
