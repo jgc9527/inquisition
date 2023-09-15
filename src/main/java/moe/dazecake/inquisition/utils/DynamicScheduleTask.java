@@ -21,10 +21,7 @@ import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
+import java.util.*;
 
 @Slf4j
 @Configuration
@@ -179,7 +176,7 @@ public class DynamicScheduleTask implements SchedulingConfigurer {
                     accountList.forEach(
                             (account) -> {
                                 log.info("【临期账号】: " + account.getName() + "\t" + account.getAccount());
-                                var msg = "您的托管账号将于" + account.getExpireTime()
+                                var msg = "您的托管账号:"+account.getName() + ", " + account.getAccount()+"将于" + account.getExpireTime()
                                         .format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "过期，记得及时续费哦。";
 
                                 //messageService.push(account, "【明日方舟】托管续费提醒", msg);
@@ -187,7 +184,8 @@ public class DynamicScheduleTask implements SchedulingConfigurer {
                             }
                     );
                 },
-                triggerContext -> new CronTrigger("0 0 23 * * ?").nextExecutionTime(triggerContext)
+                //triggerContext -> new CronTrigger("0 33 * * * ?").nextExecutionTime(triggerContext)
+                triggerContext -> new CronTrigger("0 0 20 * * ?").nextExecutionTime(triggerContext)
         );
         //账号冻结检测
         taskRegistrar.addTriggerTask(
@@ -200,14 +198,14 @@ public class DynamicScheduleTask implements SchedulingConfigurer {
                     accountList.forEach(
                             (account) -> {
                                 log.info("【冻结账号】: " + account.getName() + "\t" + account.getAccount());
-                                var msg = "您的账号仍处于冻结状态，若非手动冻结请及时检查账号状态，避免浪费账号托管时长";
+                                var msg = "您的账号:"+account.getName() + ", " + account.getAccount()+"仍处于冻结状态，若非手动冻结请及时检查账号状态，避免浪费账号托管时长";
 
                                 //messageService.push(account, "【明日方舟】账号冻结提醒", msg);
                                 messageService.pushAdmin( "【明日方舟】账号冻结提醒", msg);
                             }
                     );
                 },
-                triggerContext -> new CronTrigger("0 0 20 * * ?").nextExecutionTime(triggerContext)
+                triggerContext -> new CronTrigger("0 0 8 * * ?").nextExecutionTime(triggerContext)
         );
         //每日刷新次数更新
         taskRegistrar.addTriggerTask(
@@ -320,5 +318,30 @@ public class DynamicScheduleTask implements SchedulingConfigurer {
                 },
                 triggerContext -> new CronTrigger("0 0 4 * * ?").nextExecutionTime(triggerContext)
         );
+        //异常未登录检测
+        /*taskRegistrar.addTriggerTask(
+                () -> {
+                    log.info("【任务未完成检测】 检测开始");
+                    var accountList = accountMapper.selectList(Wrappers.<AccountEntity>lambdaQuery()
+                            .eq(AccountEntity::getFreeze, 0)
+                            .eq(AccountEntity::getDelete, 0)
+                            .ge(AccountEntity::getExpireTime, LocalDateTime.now())
+                    );
+                    var everyDayFightInfo= dynamicInfo.getEveryDayFightInfo();
+
+                    accountList.forEach(
+                            (account) -> {
+                                var everyDayFight=everyDayFightInfo.get(account.getTaskType());
+                                var everyFightRecord =everyDayFight.get(account.getId());
+                                if(Objects.nonNull(everyFightRecord)){
+                                    String content="任务类型:"+account.getTaskType()+", 账号:"+everyFightRecord.getAccount()+":一天未成功完成一次任务";
+                                    messageService.pushAdmin("[审判庭] 账号当天任务未完成提醒", content);
+                                }
+                            }
+                    );
+                    log.info("【任务未完成检测】 已完成所有任务未完成检测");
+                },
+                triggerContext -> new CronTrigger("0 0 20 * * ?").nextExecutionTime(triggerContext)
+        );*/
     }
 }

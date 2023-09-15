@@ -22,10 +22,10 @@ spring:
     host: smtp.qq.com # 邮件服务器地址
     port: 465 # 邮件服务器端口
     protocol: smtps # 邮件协议
-    username: "474212065@qq.com" # 邮件发送者账号
-    password: "tbqcttjimddxbiej" # 邮件发送者密码 (部分邮箱如QQ邮箱使用授权码)
-    from: "474212065@qq.com" # 邮件发送者邮箱
-    to: "354789237@qq.com" # 邮件接收者邮箱
+    username: "" # 邮件发送者账号
+    password: "" # 邮件发送者密码 (部分邮箱如QQ邮箱使用授权码)
+    from: "" # 邮件发送者邮箱
+    to: "" # 邮件接收者邮箱
   output:
     ansi:
       enabled: always

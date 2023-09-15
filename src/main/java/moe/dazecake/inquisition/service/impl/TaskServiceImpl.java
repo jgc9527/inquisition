@@ -10,6 +10,7 @@ import moe.dazecake.inquisition.model.dto.account.AccountDTO;
 import moe.dazecake.inquisition.model.dto.log.AddLogDTO;
 import moe.dazecake.inquisition.model.entity.AccountEntity;
 import moe.dazecake.inquisition.model.entity.DeviceEntity;
+import moe.dazecake.inquisition.model.local.EveryFightRecord;
 import moe.dazecake.inquisition.model.local.UserSan;
 import moe.dazecake.inquisition.service.intf.TaskService;
 import moe.dazecake.inquisition.utils.DynamicInfo;
@@ -186,13 +187,18 @@ public class TaskServiceImpl implements TaskService {
         }
 
         //检查B服限制新增设备
-        if (account.getServer() == 1 && account.getBLimitDevice().size() == 0) {
+        /*if (account.getServer() == 1 && account.getBLimitDevice().size() == 0) {
             account.getBLimitDevice().add(deviceToken);
             accountMapper.updateById(account);
-        }
-
+        }*/
         //记录日志
         log(deviceToken, account, "INFO", "任务完成", "请查看上一条日志以查看状态", imageUrl);
+
+        //记录每日完成状态的任务
+       /* var everyDayFightInfo=new EveryFightRecord();
+        everyDayFightInfo.setAccount(account.getAccount());
+        everyDayFightInfo.setId(account.getId());
+        dynamicInfo.getEveryDayFightInfo().get(account.getTaskType()).put(account.getId(),everyDayFightInfo);*/
 
         //推送消息
         messageService.push(account, "任务完成", "任务完成，可登陆面板查看作战结果");

@@ -17,9 +17,11 @@ public class Daily {
     {
         {
             add(new Fight("jm", 5));
+            add(new Fight("hd-7", 99));
+            add(new Fight("hd-6", 99));
             add(new Fight("ce", 99));
             add(new Fight("ls", 99));
-            add(new Fight("1-7", 99));
+            //add(new Fight("1-7", 99));
         }
     };
     private Sanity sanity = new Sanity(0, 0);

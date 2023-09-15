@@ -7,9 +7,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class UserSan {
-
-    private Integer san = 0;
-
-    private Integer maxSan = 0;
+public class EveryFightRecord {
+    private Long id;//ID
+    private String account;
 }

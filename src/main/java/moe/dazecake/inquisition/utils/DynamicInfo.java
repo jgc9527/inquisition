@@ -51,7 +51,9 @@ public class DynamicInfo extends MemoryInfo {
                 this.getFreezeUserInfoMap(),
                 this.getDeviceStatusMap(),
                 this.getDeviceCounterMap(),
-                this.getAnnouncement());
+                this.getAnnouncement()
+                //,this.getEveryDayFightInfo()
+        );
     }
 
     //获取所有等待队列详细信息

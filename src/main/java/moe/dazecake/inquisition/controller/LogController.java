@@ -9,7 +9,9 @@ import moe.dazecake.inquisition.model.dto.log.LogDTO;
 import moe.dazecake.inquisition.model.dto.log.LogIDDTO;
 import moe.dazecake.inquisition.model.vo.query.PageQueryVO;
 import moe.dazecake.inquisition.service.impl.LogServiceImpl;
+import moe.dazecake.inquisition.service.impl.MessageServiceImpl;
 import moe.dazecake.inquisition.utils.Result;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -22,9 +24,22 @@ public class LogController {
     @Resource
     LogServiceImpl logService;
 
+    @Resource
+    MessageServiceImpl messageService;
+
+    private static final String LOG_LEVEL_WARN="WARN";
+    private static final String FIGHT_PROXY_FAIL="代理失败";
+    private static final String FIGHT_PROXY_FAIL_STR="用户:%s,账号:%s,设备:%s 任务类型:%s 代理失败";
     @Operation(summary = "增加日志")
     @PostMapping("/addLog")
     public Result<String> addLog(@RequestBody AddLogDTO addLogDTO) {
+        var level=addLogDTO.getLevel();
+        var title=addLogDTO.getTitle();
+        if(LOG_LEVEL_WARN.equals(level)&&StringUtils.isNotBlank(title)&&title.contains(FIGHT_PROXY_FAIL)){
+            var failMessage=String.format(FIGHT_PROXY_FAIL_STR,addLogDTO.getName(),addLogDTO.getAccount(),addLogDTO.getFrom(),addLogDTO.getTaskType())
+                    +"\t"+addLogDTO.getDetail();
+            messageService.pushAdmin("代理翻车", failMessage);
+        }
         logService.addLog(addLogDTO, false);
         return Result.success("添加成功");
     }

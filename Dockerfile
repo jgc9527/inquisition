@@ -5,9 +5,7 @@ ENV TZ=Asia/Shanghai
 
 RUN echo "${TZ}" > /etc/timezone \
     && ln -sf /usr/share/zoneinfo/${TZ} /etc/localtime \
-    && apt update \
-    && apt install -y tzdata \
-    && rm -rf /var/lib/apt/lists/*
+&& dpkg-reconfigure -f noninteractive tzdata
 
 COPY build/libs/*.jar /Inquisition.jar
 COPY src/main/resources/application.yml /config/application.yml

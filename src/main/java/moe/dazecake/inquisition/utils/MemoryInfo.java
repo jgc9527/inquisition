@@ -3,6 +3,7 @@ package moe.dazecake.inquisition.utils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import moe.dazecake.inquisition.model.local.EveryFightRecord;
 import moe.dazecake.inquisition.model.local.UserSan;
 import moe.dazecake.inquisition.model.local.WorkUser;
 
@@ -45,4 +46,7 @@ public class MemoryInfo {
     //公告信息
     public HashMap<String, String> announcement = new HashMap<>();
 
+    //各种类型任务每日完成账号统计
+    //key:任务类型
+    //public HashMap<String, HashMap<Long,EveryFightRecord>> everyDayFightInfo = new HashMap<>();
 }
